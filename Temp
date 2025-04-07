@@ -1,1 +1,11 @@
 
+TileCardSecurityView       // For show/hide CVV  
+TileCardCopyView           // For copying name or number  
+TileImportantInfoView      // For bottom section with bullet points  
+TileCardInfoView           // For general card display (no actions)  
+
+
+CardDetailTileView	Slightly more descriptive if you're showing expiry, scheme, etc.
+CardDisplayTileView	Emphasizes it's purely for viewing, not interaction.
+CardStaticTileView	Technical-sounding, conveys it's static data.
+CardSummaryTileView	Nice if you’re showing a short summary or multiple fields.
