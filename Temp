@@ -1,0 +1,210 @@
+struct Tile: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    var style: Tile.Style {
+        Tile.Style(themeManager)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header
+            Text("Important Information")
+                .font(.headline)
+                .foregroundColor(style.colors.primaryText)
+                .accessibilityAddTraits(.isHeader)
+
+            // Bullet Points
+            VStack(alignment: .leading, spacing: 8) {
+                bulletPoint("First important detail goes here.")
+                bulletPoint("Second helpful note with more info.")
+            }
+        }
+        .padding(.horizontal, style.dimensions.paddingHorizontal)
+        .padding(.vertical, style.dimensions.paddingVertical)
+        .background(Color.cyan)
+        .cornerRadius(12)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Important Information. First important detail goes here. Second helpful note with more info.")
+        .accessibilityIdentifier("infoTile")
+    }
+
+    @ViewBuilder
+    private func bulletPoint(_ text: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Text("•")
+                .font(.body)
+                .accessibilityHidden(true) // VoiceOver doesn’t need to say "bullet"
+
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(style.colors.secondaryText)
+                .accessibilityLabel(text)
+        }
+    }
+}
+
+
+//////////// Copy
+
+struct Tile: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    let primaryInfoText: String
+    let secondaryText: String
+
+    var style: Tile.Style {
+        Tile.Style(themeManager)
+    }
+
+    init(primaryInfoText: String, secondaryText: String) {
+        self.primaryInfoText = primaryInfoText
+        self.secondaryText = secondaryText
+    }
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 0) {
+                    primaryInfoTextBody()
+                    secondaryTextBody()
+                }
+
+                Spacer()
+
+                Button(action: {
+                    let textToCopy = "\(primaryInfoText) \(secondaryText)"
+                    UIPasteboard.general.string = textToCopy
+                }) {
+                    HStack(spacing: 4) {
+                        Text("Copy")
+                            .font(.footnote)
+                        Image(systemName: "doc.on.doc")
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                    }
+                    .foregroundColor(.blue)
+                    .padding(6)
+                }
+                .accessibilityIdentifier("copyButton")
+            }
+            .padding(.horizontal, style.dimensions.paddingHorizontal)
+            .padding(.bottom, style.dimensions.dividerPaddingVertical)
+
+            tileDivider()
+        }
+        .padding(.top, style.dimensions.paddingVertical)
+        .background(Color.cyan) // Use themed background if available
+        .accessibilityElement(children: .combine)
+    }
+
+    func primaryInfoTextBody() -> some View {
+        Text(primaryInfoText)
+            .themedFont(token: .semanticTypographyContentFootnoteNormal)
+            .foregroundColor(style.colors.primaryText)
+            .accessibilityIdentifier(Tile.AccessibilityIdentifier.primaryText)
+    }
+
+    func secondaryTextBody() -> some View {
+        Text(secondaryText)
+            .themedFont(token: .semanticTypographyContentCaptionLoud)
+            .foregroundColor(style.colors.secondaryText)
+            .accessibilityIdentifier(Tile.AccessibilityIdentifier.secondaryText)
+    }
+
+    func tileDivider() -> some View {
+        style.colors.divider
+            .frame(height: style.dimensions.borderWidthDivider)
+            .padding(.leading, 0)
+            .padding(.trailing, 0)
+            .accessibilityIdentifier(Tile.AccessibilityIdentifier.divider)
+    }
+}
+
+///// View
+
+struct Tile: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    let primaryInfoText: String
+    let secondaryText: String
+
+    var style: Tile.Style {
+        Tile.Style(themeManager)
+    }
+
+    init(primaryInfoText: String, secondaryText: String) {
+        self.primaryInfoText = primaryInfoText
+        self.secondaryText = secondaryText
+    }
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 0) {
+                    primaryInfoTextBody()
+                    secondaryTextBody()
+                }
+
+                Spacer()
+
+                Button(action: {
+                    let textToCopy = "\(primaryInfoText) \(secondaryText)"
+                    UIPasteboard.general.string = textToCopy
+                }) {
+                    HStack(spacing: 4) {
+                        Text("Copy")
+                            .font(.footnote)
+                        Image(systemName: "doc.on.doc")
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                            .accessibilityHidden(true) // icon not needed for VoiceOver
+                    }
+                    .foregroundColor(.blue)
+                    .padding(6)
+                }
+                .accessibilityIdentifier("copyButton")
+                .accessibilityLabel("Copy card information")
+                .accessibilityHint("Double tap to copy \(primaryInfoText) and \(secondaryText) to clipboard")
+            }
+            .padding(.horizontal, style.dimensions.paddingHorizontal)
+            .padding(.bottom, style.dimensions.dividerPaddingVertical)
+
+            tileDivider()
+        }
+        .padding(.top, style.dimensions.paddingVertical)
+        .background(Color.cyan)
+        .cornerRadius(12)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(primaryInfoText), \(secondaryText)")
+        .accessibilityIdentifier("copyTile")
+    }
+
+    func primaryInfoTextBody() -> some View {
+        Text(primaryInfoText)
+            .themedFont(token: .semanticTypographyContentFootnoteNormal)
+            .foregroundColor(style.colors.primaryText)
+            .accessibilityIdentifier(Tile.AccessibilityIdentifier.primaryText)
+            .accessibilityLabel(primaryInfoText)
+    }
+
+    func secondaryTextBody() -> some View {
+        Text(secondaryText)
+            .themedFont(token: .semanticTypographyContentCaptionLoud)
+            .foregroundColor(style.colors.secondaryText)
+            .accessibilityIdentifier(Tile.AccessibilityIdentifier.secondaryText)
+            .accessibilityLabel(secondaryText)
+    }
+
+    func tileDivider() -> some View {
+        style.colors.divider
+            .frame(height: style.dimensions.borderWidthDivider)
+            .padding(.leading, 0)
+            .padding(.trailing, 0)
+            .accessibilityHidden(true)
+            .accessibilityIdentifier(Tile.AccessibilityIdentifier.divider)
+    }
+}
+
+
+
+
