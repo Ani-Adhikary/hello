@@ -111,3 +111,33 @@ struct TileCardSecurityView: View {
     }
 }
 
+
+
+/////
+
+TileCardSecurityView
+
+TileCardCopyView
+
+TileImportantInfoView
+
+
+////
+
+CardSecurityTileView
+
+CardCopyTileView
+
+ImportantInfoSectionView
+
+
+/////
+
+Text("Hello Sweety")
+    .font(.system(size: 16, weight: .bold))
+
+Text("Hello Sweety").fontWeight(.bold)
+
+Text("Hello Sweety").bold()
+
+
