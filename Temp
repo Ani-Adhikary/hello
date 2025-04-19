@@ -1,1 +1,51 @@
 
+
+GeometryReader { geometry in
+            let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+            let isLandscape = geometry.size.width > geometry.size.height
+            let safeAreaInsets = geometry.safeAreaInsets
+
+
+}
+.ignoresSafeArea(.all, edges: .horizontal) 
+
+
+.onChange(of: geometry.size) { // iOS 17.0+ onChange syntax
+                viewModel.updateIconCount(
+                    width: geometry.size.width,
+                    safeAreaLeading: safeAreaInsets.leading,
+                    safeAreaTrailing: safeAreaInsets.trailing,
+                    isIPad: isIPad,
+                    isLandscape: isLandscape
+                )
+            }
+            .onAppear {
+                viewModel.updateIconCount(
+                    width: geometry.size.width,
+                    safeAreaLeading: safeAreaInsets.leading,
+                    safeAreaTrailing: safeAreaInsets.trailing,
+                    isIPad: isIPad,
+                    isLandscape: isLandscape
+                )
+            }
+
+
+
+@Published var iconCount: Int
+    private let maxQuickActions: Int
+
+
+
+func updateIconCount(width: CGFloat, safeAreaLeading: CGFloat, safeAreaTrailing: CGFloat, isIPad: Bool, isLandscape: Bool) {
+        // Calculate available width in pixels (points)
+        let availableWidth = width - safeAreaLeading - safeAreaTrailing
+        
+        if isIPad && isLandscape {
+            // iPad landscape: at least 5 icons, scale by dividing width by 60 pixels per icon
+            let iconsByWidth = Int(availableWidth / 60) // Simple pixel-based scaling
+            iconCount = max(5, iconsByWidth)
+        } else {
+            // iPhone (portrait or landscape) or iPad portrait: exactly 4 icons
+            iconCount = maxQuickActions
+        }
+    }
