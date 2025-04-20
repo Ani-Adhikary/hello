@@ -1,51 +1,110 @@
+import SwiftUI
 
-
-GeometryReader { geometry in
-            let isIPad = UIDevice.current.userInterfaceIdiom == .pad
-            let isLandscape = geometry.size.width > geometry.size.height
-            let safeAreaInsets = geometry.safeAreaInsets
-
-
+struct ContentView: View {
+    var body: some View {
+        QuickActionMenu()
+    }
 }
-.ignoresSafeArea(.all, edges: .horizontal) 
 
-
-.onChange(of: geometry.size) { // iOS 17.0+ onChange syntax
-                viewModel.updateIconCount(
-                    width: geometry.size.width,
-                    safeAreaLeading: safeAreaInsets.leading,
-                    safeAreaTrailing: safeAreaInsets.trailing,
-                    isIPad: isIPad,
-                    isLandscape: isLandscape
-                )
-            }
-            .onAppear {
-                viewModel.updateIconCount(
-                    width: geometry.size.width,
-                    safeAreaLeading: safeAreaInsets.leading,
-                    safeAreaTrailing: safeAreaInsets.trailing,
-                    isIPad: isIPad,
-                    isLandscape: isLandscape
-                )
-            }
-
-
-
-@Published var iconCount: Int
-    private let maxQuickActions: Int
-
-
-
-func updateIconCount(width: CGFloat, safeAreaLeading: CGFloat, safeAreaTrailing: CGFloat, isIPad: Bool, isLandscape: Bool) {
-        // Calculate available width in pixels (points)
-        let availableWidth = width - safeAreaLeading - safeAreaTrailing
+struct QuickActionMenu: View {
+    private let actions = [
+        "star.fill",
+        "heart.fill",
+        "bolt.fill",
+        "moon.fill",
+        "sun.max.fill",
+        "cloud.fill",
+        "flame.fill"
+    ]
+    
+    @StateObject private var viewModel = QuickActionsViewModel(maxQuickActions: 4)
+    @State private var orientationTrigger = UUID()
+    
+    var body: some View {
+        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+        let screenSize = UIScreen.main.bounds.size
+        let isLandscape = isIPad && screenSize.width > screenSize.height
         
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                ForEach(0..<min(viewModel.iconCount, actions.count), id: \.self) { index in
+                    QuickActionView(
+                        iconName: actions[index],
+                        action: { print("\(actions[index]) tapped") }
+                    )
+                }
+                Spacer()
+            }
+            Spacer()
+        }
+        .id(orientationTrigger)
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            DispatchQueue.main.async {
+                let newScreenSize = UIScreen.main.bounds.size
+                let newIsLandscape = isIPad && newScreenSize.width > newScreenSize.height
+                print("Orientation: isIPad=\(isIPad), isLandscape=\(newIsLandscape), iconCount=\(viewModel.iconCount)")
+                viewModel.updateIconCount(
+                    width: newScreenSize.width,
+                    isIPad: isIPad,
+                    isLandscape: newIsLandscape
+                )
+                orientationTrigger = UUID()
+            }
+        }
+        .onAppear {
+            viewModel.updateIconCount(
+                width: screenSize.width,
+                isIPad: isIPad,
+                isLandscape: isLandscape
+            )
+        }
+    }
+}
+
+class QuickActionsViewModel: ObservableObject {
+    @Published var iconCount: Int
+    private let maxQuickActions: Int
+    
+    init(maxQuickActions: Int = 4) {
+        self.maxQuickActions = maxQuickActions
+        self.iconCount = maxQuickActions
+    }
+    
+    func updateIconCount(width: CGFloat, isIPad: Bool, isLandscape: Bool) {
         if isIPad && isLandscape {
-            // iPad landscape: at least 5 icons, scale by dividing width by 60 pixels per icon
-            let iconsByWidth = Int(availableWidth / 60) // Simple pixel-based scaling
-            iconCount = max(5, iconsByWidth)
+            let baseIcons = 5
+            let baselineWidth: CGFloat = 600
+            let extraIcons = Int((width - baselineWidth) / 100)
+            iconCount = baseIcons + max(0, extraIcons)
         } else {
-            // iPhone (portrait or landscape) or iPad portrait: exactly 4 icons
             iconCount = maxQuickActions
         }
     }
+}
+
+struct QuickActionView: View {
+    let iconName: String
+    let action: () -> Void
+    @State private var isTapped = false
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isTapped = true
+            }
+            action()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                isTapped = false
+            }
+        }) {
+            Image(systemName: iconName)
+                .frame(width: 60, height: 50)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .scaleEffect(isTapped ? 0.95 : 1.0)
+        }
+    }
+}
