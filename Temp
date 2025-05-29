@@ -1,1 +1,6 @@
-
+if panelType == .upcomingPayments {
+            let statementBalanceIsZero = viewStore.creditAccountDetail?.creditCardStatementBalance?.amount.isEqualToZero() ?? false
+            return !statementBalanceIsZero // Return false if balance is zero (i.e., hide it)
+        } else {
+            return true // Keep other panel types
+        }
