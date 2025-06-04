@@ -1,6 +1,20 @@
-if panelType == .upcomingPayments {
-            let statementBalanceIsZero = viewStore.creditAccountDetail?.creditCardStatementBalance?.amount.isEqualToZero() ?? false
-            return !statementBalanceIsZero // Return false if balance is zero (i.e., hide it)
+func filterEmptyUpcomingPaymentPanel() {
+    let tmpArray = currentIndexPanelTypeArray.filter { panelType in
+        if panelType == .upcomingPayments,
+           let field = viewStore.cardsHubConfiguration?.upcomingPaymentPanelConfig?.paymentAmountExtractField {
+            
+            if field.lowercased() == Constants.paymentTileUKExtraFieldValue.lowercased() {
+                // Always show when UK field selected (ignore amount)
+                return true
+            } else {
+                // Only show if currentAmountDue > 0
+                let currentAmountDueIsPositive = viewStore.creditAccountDetail?.creditCardCurrentAmountDue?.amount.isGreaterThanZero() ?? false
+                return currentAmountDueIsPositive
+            }
         } else {
-            return true // Keep other panel types
+            return true
         }
+    }
+
+    currentIndexPanelTypeArray = tmpArray
+}
