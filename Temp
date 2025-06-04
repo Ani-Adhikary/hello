@@ -3,16 +3,13 @@ func countdownText() -> some View {
     let second = viewModel.getCVVCountdownSecondTitle()
     let seconds = viewModel.getCVVCountdownSecondsTitle()
 
-    let boldPart = countdown == 1 ?
-        Text("\(countdown) \(second) ")
-            .themedFont(token: .semanticTypographyContentCaptionLoud) :
-        Text("\(countdown) \(seconds) ")
-            .themedFont(token: .semanticTypographyContentCaptionLoud)
-
-    let normalPart = Text(countMsg)
+    let isSingular = countdown == 1
+    let boldText = Text("\(countdown) \(isSingular ? second : seconds) ")
+        .themedFont(token: .semanticTypographyContentCaptionLoud)
+    let normalText = Text(countMsg)
         .themedFont(token: .semanticTypographyContentBodyNormal)
 
-    return (boldPart + normalPart)
+    return (boldText + normalText)
         .foregroundColor(style.base.colors.secondaryText)
         .padding(.horizontal, style.base.dimensions.paddingHorizontal)
         .transition(.opacity)
