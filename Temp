@@ -1,20 +1,20 @@
-func filterEmptyUpcomingPaymentPanel() {
-    let tmpArray = currentIndexPanelTypeArray.filter { panelType in
-        if panelType == .upcomingPayments,
-           let field = viewStore.cardsHubConfiguration?.upcomingPaymentPanelConfig?.paymentAmountExtractField {
-            
-            if field.lowercased() == Constants.paymentTileUKExtraFieldValue.lowercased() {
-                // Always show when UK field selected (ignore amount)
-                return true
-            } else {
-                // Only show if currentAmountDue > 0
-                let currentAmountDueIsPositive = viewStore.creditAccountDetail?.creditCardCurrentAmountDue?.amount.isGreaterThanZero() ?? false
-                return currentAmountDueIsPositive
-            }
-        } else {
-            return true
-        }
-    }
+func countdownText() -> some View {
+    let countMsg = viewModel.getCVVCountdownMessageTitle()
+    let second = viewModel.getCVVCountdownSecondTitle()
+    let seconds = viewModel.getCVVCountdownSecondsTitle()
 
-    currentIndexPanelTypeArray = tmpArray
+    let boldPart = countdown == 1 ?
+        Text("\(countdown) \(second) ")
+            .themedFont(token: .semanticTypographyContentCaptionLoud) :
+        Text("\(countdown) \(seconds) ")
+            .themedFont(token: .semanticTypographyContentCaptionLoud)
+
+    let normalPart = Text(countMsg)
+        .themedFont(token: .semanticTypographyContentBodyNormal)
+
+    return (boldPart + normalPart)
+        .foregroundColor(style.base.colors.secondaryText)
+        .padding(.horizontal, style.base.dimensions.paddingHorizontal)
+        .transition(.opacity)
+        .accessibilityIdentifier("cvvCountdown")
 }
