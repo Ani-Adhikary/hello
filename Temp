@@ -4,14 +4,17 @@ func countdownText() -> some View {
     let seconds = viewModel.getCVVCountdownSecondsTitle()
 
     let isSingular = countdown == 1
-    let boldText = Text("\(countdown) \(isSingular ? second : seconds) ")
-        .themedFont(token: .semanticTypographyContentCaptionLoud)
-    let normalText = Text(countMsg)
-        .themedFont(token: .semanticTypographyContentBodyNormal)
+    let countdownText = "\(countdown) \(isSingular ? second : seconds)"
 
-    return (boldText + normalText)
-        .foregroundColor(style.base.colors.secondaryText)
-        .padding(.horizontal, style.base.dimensions.paddingHorizontal)
-        .transition(.opacity)
-        .accessibilityIdentifier("cvvCountdown")
+    return HStack(spacing: 0) {
+        Text(countdownText + " ")
+            .themedFont(token: .semanticTypographyContentCaptionLoud)
+
+        Text(countMsg)
+            .themedFont(token: .semanticTypographyContentBodyNormal)
+    }
+    .foregroundColor(style.base.colors.secondaryText)
+    .padding(.horizontal, style.base.dimensions.paddingHorizontal)
+    .transition(.opacity)
+    .accessibilityIdentifier("cvvCountdown")
 }
