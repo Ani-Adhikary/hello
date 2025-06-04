@@ -1,20 +1,23 @@
-func countdownText() -> some View {
-    let countMsg = viewModel.getCVVCountdownMessageTitle()
-    let second = viewModel.getCVVCountdownSecondTitle()
-    let seconds = viewModel.getCVVCountdownSecondsTitle()
+func filterUpcomingPanelAllowingZeroStatementBalance() {
+    let tmpArray = currentIndexPanelTypeArray.filter { panelType in
+        if panelType == .upcomingPayments,
+           let field = viewStore.cardsHubConfiguration?.upcomingPaymentPanelConfig?.paymentAmountExtractField {
 
-    let isSingular = countdown == 1
-    let countdownText = "\(countdown) \(isSingular ? second : seconds)"
+            // Show if statementBalance exists (regardless of amount value)
+            let statementBalanceExists = viewStore.creditAccountDetail?.creditCardStatementBalance?.amount != nil
 
-    return HStack(spacing: 0) {
-        Text(countdownText + " ")
-            .themedFont(token: .semanticTypographyContentCaptionLoud)
+            // Show only if currentAmountDue is > 0
+            let currentAmountDueIsPositive = viewStore.creditAccountDetail?.creditCardCurrentAmountDue?.amount.isGreaterThanZero() ?? false
 
-        Text(countMsg)
-            .themedFont(token: .semanticTypographyContentBodyNormal)
+            let result = field.lowercased() == Constants.paymentTileUKExtraFieldValue.lowercased() ?
+                statementBalanceExists :
+                currentAmountDueIsPositive
+
+            return result
+        } else {
+            return true
+        }
     }
-    .foregroundColor(style.base.colors.secondaryText)
-    .padding(.horizontal, style.base.dimensions.paddingHorizontal)
-    .transition(.opacity)
-    .accessibilityIdentifier("cvvCountdown")
+
+    currentIndexPanelTypeArray = tmpArray
 }
