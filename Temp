@@ -1,1 +1,2 @@
-
+.accessibilityLabel(isCVVVisible ? "Hide CVV" : "View CVV")
+                .accessibilityHint("Double tap to \(isCVVVisible ? "hide" : "view") the CVV securely")
