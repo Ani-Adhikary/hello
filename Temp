@@ -1,13 +1,19 @@
-func body(content: Content) -> some View {
+var body: some View {
+    let viewModel = CardDetailViewModel()
+
     GeometryReader { geometry in
         ZStack(alignment: .top) {
-            content
-                .frame(width: geometry.size.width, height: geometry.size.height) // Fill the whole screen
-
-            if isShowing {
-                snackBarView()
-                    .padding(.top, 10) // spacing from top
-            }
+            panelMainView(viewModel: viewModel)
+                .frame(width: geometry.size.width, height: geometry.size.height)
         }
+        .snackBar(
+            isShowing: $isCopyAlertShow,
+            snackBarDuration: .short,
+            reset: true,
+            content: {
+                SnackBar(content: copyTitle, mode: .success)
+                    .frame(maxWidth: .infinity)
+            }
+        )
     }
 }
