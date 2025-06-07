@@ -1,10 +1,20 @@
 var body: some View {
-    ZStack {
-        Color.clear // This forces the ZStack to expand full-screen
+    let viewModel = CardDetailViewModel()
 
-        panelMainView(viewModel: CardDetailViewModel())
+    VStack {
+        Spacer(minLength: 0) // push content to top
+
+        panelMainView(viewModel: viewModel)
+            .background(
+                GeometryReader { proxy in
+                    Color.clear.preference(key: ViewHeightKey.self, value: proxy.size.height)
+                }
+            )
+
+        Spacer() // allows ZStack height to match screen
     }
-    .edgesIgnoringSafeArea(.all) // Ensure the stack covers top area
+    .frame(maxWidth: .infinity, maxHeight: .infinity) // force full screen
+    .background(Color.clear)
     .snackBar(
         isShowing: $isCopyAlertShow,
         snackBarDuration: .short,
