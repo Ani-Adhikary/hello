@@ -1,1 +1,36 @@
+func countdownDisplayParts(for countdown: Int) -> (String, String) {
+    let countMsg = getCVVCountdownMessageTitle()
+    let second = getCVVCountdownSecondTitle()
+    let seconds = getCVVCountdownSecondsTitle()
+    
+    let unit = countdown == 1 ? second : seconds
+    return ("\(countdown) \(unit)", countMsg)
+}
+
+
+let (countdownPart, countMsg) = viewModel.countdownDisplayParts(for: countdown)
+
+HStack(spacing: 0) {
+    Text(countdownPart + " ")
+        .themedFont(token: .semanticTypographyContentCaptionLoud)
+
+    Text(countMsg)
+        .themedFont(token: .semanticTypographyContentBodyNormal)
+}
+.foregroundColor(style.base.colors.secondaryText)
+.padding(.horizontal, style.base.dimensions.paddingHorizontal)
+.transition(.opacity)
+.accessibilityIdentifier("cvvCountdown")
+
+
+func testCountdownDisplayParts_singleSecond() {
+    let viewModel = CVVViewModel()
+    viewModel.getCVVCountdownMessageTitle = { "until CVV is hidden" }
+    viewModel.getCVVCountdownSecondTitle = { "second" }
+    viewModel.getCVVCountdownSecondsTitle = { "seconds" }
+
+    let (boldText, normalText) = viewModel.countdownDisplayParts(for: 1)
+    XCTAssertEqual(boldText, "1 second")
+    XCTAssertEqual(normalText, "until CVV is hidden")
+}
 
