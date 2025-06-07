@@ -1,23 +1,18 @@
-func filterUpcomingPanelAllowingZeroStatementBalance() {
-    let tmpArray = currentIndexPanelTypeArray.filter { panelType in
-        if panelType == .upcomingPayments,
-           let field = viewStore.cardsHubConfiguration?.upcomingPaymentPanelConfig?.paymentAmountExtractField {
-
-            // Show if statementBalance exists (regardless of amount value)
-            let statementBalanceExists = viewStore.creditAccountDetail?.creditCardStatementBalance?.amount != nil
-
-            // Show only if currentAmountDue is > 0
-            let currentAmountDueIsPositive = viewStore.creditAccountDetail?.creditCardCurrentAmountDue?.amount.isGreaterThanZero() ?? false
-
-            let result = field.lowercased() == Constants.paymentTileUKExtraFieldValue.lowercased() ?
-                statementBalanceExists :
-                currentAmountDueIsPositive
-
-            return result
-        } else {
-            return true
+var body: some View {
+    GeometryReader { geometry in
+        VStack(spacing: 0) {
+            panelMainView(viewModel: CardDetailViewModel())
+            Spacer() // Pushes the main view to the top
         }
+        .frame(width: geometry.size.width, height: geometry.size.height)
+        .snackBar(
+            isShowing: $isCopyAlertShow,
+            snackBarDuration: .short,
+            reset: true,
+            content: {
+                SnackBar(content: copyTitle, mode: .success)
+                    .frame(maxWidth: .infinity)
+            }
+        )
     }
-
-    currentIndexPanelTypeArray = tmpArray
 }
