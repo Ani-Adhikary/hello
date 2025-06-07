@@ -1,21 +1,13 @@
-var body: some View {
-    let viewModel = CardDetailViewModel()
+func body(content: Content) -> some View {
+    GeometryReader { geometry in
+        ZStack(alignment: .top) {
+            content
+                .frame(width: geometry.size.width, height: geometry.size.height) // Fill the whole screen
 
-    ZStack(alignment: .top) {
-        GeometryReader { geo in
-            VStack(spacing: 0) {
-                ScrollView {
-                    mainView(viewModel: viewModel)
-                }
-                .frame(height: geo.size.height)  // fill entire height
+            if isShowing {
+                snackBarView()
+                    .padding(.top, 10) // spacing from top
             }
-            .frame(width: geo.size.width, height: geo.size.height)
         }
     }
-    .snackBar(
-        isShowing: $isCopyAlertShow,
-        snackBarDuration: .short,
-        reset: true,
-        snackBar: SnackBar(content: copyTitle, mode: .success)
-    )
 }
