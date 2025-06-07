@@ -1,10 +1,23 @@
-func testCVVCountdownAccessibilityLabel() {
-    let app = XCUIApplication()
-    app.launch()
-    
-    let countdownLabel = app.staticTexts["cvvCountdown"]
-    XCTAssertTrue(countdownLabel.exists)
-    XCTAssertEqual(countdownLabel.label, "5 seconds until CVV is hidden")
+final class MockCVVViewModel: CVVViewModel {
+    override func getCVVCountdownMessageTitle() -> String {
+        return "until CVV is hidden"
+    }
+
+    override func getCVVCountdownSecondTitle() -> String {
+        return "second"
+    }
+
+    override func getCVVCountdownSecondsTitle() -> String {
+        return "seconds"
+    }
 }
 
+final class CVVViewModelTests: XCTestCase {
+    func testCountdownDisplayParts_singular() {
+        let viewModel = MockCVVViewModel()
+        let (part, msg) = viewModel.countdownDisplayParts(for: 1)
 
+        XCTAssertEqual(part, "1 second")
+        XCTAssertEqual(msg, "until CVV is hidden")
+    }
+}
