@@ -1,18 +1,17 @@
 var body: some View {
-    GeometryReader { geometry in
-        VStack(spacing: 0) {
-            panelMainView(viewModel: CardDetailViewModel())
-            Spacer() // Pushes the main view to the top
-        }
-        .frame(width: geometry.size.width, height: geometry.size.height)
-        .snackBar(
-            isShowing: $isCopyAlertShow,
-            snackBarDuration: .short,
-            reset: true,
-            content: {
-                SnackBar(content: copyTitle, mode: .success)
-                    .frame(maxWidth: .infinity)
-            }
-        )
+    ZStack {
+        Color.clear // This forces the ZStack to expand full-screen
+
+        panelMainView(viewModel: CardDetailViewModel())
     }
+    .edgesIgnoringSafeArea(.all) // Ensure the stack covers top area
+    .snackBar(
+        isShowing: $isCopyAlertShow,
+        snackBarDuration: .short,
+        reset: true,
+        content: {
+            SnackBar(content: copyTitle, mode: .success)
+                .frame(maxWidth: .infinity)
+        }
+    )
 }
