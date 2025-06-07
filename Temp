@@ -1,13 +1,14 @@
 var body: some View {
-    ZStack(alignment: .top) {
-        Color.clear // Forces ZStack to expand to full screen
+    let viewModel = CardDetailViewModel()
 
-        NavigationView {
-            panelMainView(viewModel: CardDetailViewModel())
+    ZStack(alignment: .top) {
+        ScrollView {
+            mainView(viewModel: viewModel)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarItems(leading: backButton)
     }
-    .edgesIgnoringSafeArea(.all) // Ensures ZStack covers top safe area
     .snackBar(
         isShowing: $isCopyAlertShow,
         snackBarDuration: .short,
