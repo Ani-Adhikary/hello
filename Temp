@@ -4,13 +4,7 @@ func body(content: Content) -> some View {
             content
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .background(
-                    GeometryReader { innerGeometry in
-                        if reset {
-                            resetSnackBarView(geometry: innerGeometry)
-                        } else {
-                            Color.clear
-                        }
-                    }
+                    reset ? AnyView(resetSnackBarView(geometry: geometry)) : AnyView(Color.clear)
                 )
             
             VStack {
@@ -19,7 +13,7 @@ func body(content: Content) -> some View {
                         .padding(.top, 10)
                         .transition(.move(edge: .top).combined(with: .opacity))
                 }
-                Spacer() // Push snackbar to top
+                Spacer()
             }
         }
     }
