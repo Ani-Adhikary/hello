@@ -2,20 +2,20 @@ var body: some View {
     let viewModel = CardDetailViewModel()
 
     ZStack(alignment: .top) {
-        ScrollView {
-            mainView(viewModel: viewModel)
+        GeometryReader { geo in
+            VStack(spacing: 0) {
+                ScrollView {
+                    mainView(viewModel: viewModel)
+                }
+                .frame(height: geo.size.height)  // fill entire height
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
         }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(leading: backButton)
     }
     .snackBar(
         isShowing: $isCopyAlertShow,
         snackBarDuration: .short,
         reset: true,
-        content: {
-            SnackBar(content: copyTitle, mode: .success)
-                .frame(maxWidth: .infinity)
-        }
+        snackBar: SnackBar(content: copyTitle, mode: .success)
     )
 }
