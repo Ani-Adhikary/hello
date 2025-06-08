@@ -1,1 +1,32 @@
 
+import UIKit
+
+protocol Pasteboard {
+    var string: String? { get set }
+}
+
+extension UIPasteboard: Pasteboard {}
+
+class CVVViewModel {
+    private let pasteboard: Pasteboard
+
+    init(pasteboard: Pasteboard = UIPasteboard.general) {
+        self.pasteboard = pasteboard
+    }
+
+    func getAdditionalPublicDataToPasteboard(key: AdditionalInfoKey) -> String {
+        switch key {
+        case .nameOnCard:
+            return "Wes William Anderson"
+        case .cardNumber:
+            return "1234 1234 1234 1212"
+        }
+    }
+
+    func clickCopyButton(key: AdditionalInfoKey) {
+        let copyString = getAdditionalPublicDataToPasteboard(key: key)
+        if !copyString.isEmpty {
+            pasteboard.string = copyString
+        }
+    }
+}
