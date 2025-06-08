@@ -1,32 +1,42 @@
+import XCTest
+@testable import YourAppModule
 
-import UIKit
+final class CVVViewModelTests: XCTestCase {
 
-protocol Pasteboard {
-    var string: String? { get set }
-}
-
-extension UIPasteboard: Pasteboard {}
-
-class CVVViewModel {
-    private let pasteboard: Pasteboard
-
-    init(pasteboard: Pasteboard = UIPasteboard.general) {
-        self.pasteboard = pasteboard
+    class MockPasteboard: Pasteboard {
+        var string: String?
     }
 
-    func getAdditionalPublicDataToPasteboard(key: AdditionalInfoKey) -> String {
-        switch key {
-        case .nameOnCard:
-            return "Wes William Anderson"
-        case .cardNumber:
-            return "1234 1234 1234 1212"
-        }
+    func testCopy_nameOnCard_shouldCopyToPasteboard() {
+        let mock = MockPasteboard()
+        let viewModel = CVVViewModel(pasteboard: mock)
+
+        viewModel.clickCopyButton(key: .nameOnCard)
+
+        XCTAssertEqual(mock.string, "Wes William Anderson")
     }
 
-    func clickCopyButton(key: AdditionalInfoKey) {
-        let copyString = getAdditionalPublicDataToPasteboard(key: key)
-        if !copyString.isEmpty {
-            pasteboard.string = copyString
+    func testCopy_cardNumber_shouldCopyToPasteboard() {
+        let mock = MockPasteboard()
+        let viewModel = CVVViewModel(pasteboard: mock)
+
+        viewModel.clickCopyButton(key: .cardNumber)
+
+        XCTAssertEqual(mock.string, "1234 1234 1234 1212")
+    }
+
+    func testCopy_empty_shouldNotCopy() {
+        class EmptyReturnViewModel: CVVViewModel {
+            override func getAdditionalPublicDataToPasteboard(key: AdditionalInfoKey) -> String {
+                return ""
+            }
         }
+
+        let mock = MockPasteboard()
+        let viewModel = EmptyReturnViewModel(pasteboard: mock)
+
+        viewModel.clickCopyButton(key: .nameOnCard)
+
+        XCTAssertNil(mock.string)
     }
 }
