@@ -1,2 +1,1 @@
 
-.accessibilityHint("\(CVVAccessibility.actionPrefix) \(isCVVVisible ? CVVAccessibility.actionHide : CVVAccessibility.actionView) \(CVVAccessibility.actionSuffix)")
