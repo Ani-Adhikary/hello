@@ -1,1 +1,11 @@
+func testAccessibilityHint_whenCVVIsVisible_returnsHideHint() {
+        let viewModel = CVVViewModel()
+        let result = viewModel.getCVVAccessibilityHint(isVisible: true)
+        XCTAssertEqual(result, "Double tap to hide the CVV securely")
+    }
 
+    func testAccessibilityHint_whenCVVIsNotVisible_returnsViewHint() {
+        let viewModel = CVVViewModel()
+        let result = viewModel.getCVVAccessibilityHint(isVisible: false)
+        XCTAssertEqual(result, "Double tap to view the CVV securely")
+    }
